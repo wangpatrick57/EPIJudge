@@ -656,7 +656,7 @@ problem_mapping = {
                 "total": 457
             },
             "C++: insert_in_list.cc": {
-                "passed": 0,
+                "passed": 504,
                 "total": 504
             },
             "C++: search_in_list.cc": {
