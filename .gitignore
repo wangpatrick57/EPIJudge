@@ -10,6 +10,7 @@ __pycache__/
 *$py.class
 
 # Visual Studio 2017 files
+.vscode/
 .vs
 /epi_judge_cpp/vs
 /epi_judge_cpp_solutions/vs
