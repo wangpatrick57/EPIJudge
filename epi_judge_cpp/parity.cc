@@ -6,8 +6,9 @@ short Parity(unsigned long long x)
     short parity = 0;
 
     while (x) {
-        parity ^= 1;
-        x &= x - 1;
+        unsigned long long lowest_bit = x & ~(x - 1);
+        x = x & ~lowest_bit;
+        parity = !parity;
     }
 
     return parity;
