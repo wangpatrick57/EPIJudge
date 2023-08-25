@@ -4,41 +4,55 @@
 #include <bitset>
 
 using namespace std;
+const int SHORT_NUM_BITS = 16;
+const int ULL_NUM_BITS = 64;
+unsigned short reversed_cache[1 << SHORT_NUM_BITS];
+
+static unsigned short swap_bits(unsigned short x, int i, int j) {
+    unsigned short inverted_x = x ^ (1 << i) ^ (1 << j);
+    bool x_should_be_inverted = ((x >> i) & 1) != ((x >> j) & 1);
+    unsigned short res = x_should_be_inverted ? inverted_x : x;
+    return res;
+}
+
+static unsigned short compute_reversed_short(unsigned short x) {
+    for (int i = 0; i < SHORT_NUM_BITS / 2; i++) {
+        x = swap_bits(x, i, SHORT_NUM_BITS - 1 - i);
+    }
+
+    return x;
+}
+
+static unsigned short get_reversed_short(unsigned short x) {
+    if (reversed_cache[x] == 0) {
+        // a cache value of 0 means "invalid", unless x == 0, in which case it's valid
+        if (x != 0) {
+            reversed_cache[x] = compute_reversed_short(x);
+        }
+    }
+
+    return reversed_cache[x];
+}
+
+static unsigned long long get_reversed_short_in_ull(unsigned long long x, int offset, unsigned long long short_mask) {
+    unsigned long long res = (unsigned long long)get_reversed_short((unsigned short)((x >> offset) & short_mask)) << (ULL_NUM_BITS - SHORT_NUM_BITS - offset);
+    bitset<ULL_NUM_BITS> x_binrep(x);
+    bitset<ULL_NUM_BITS> res_binrep(res);
+    return res;
+}
 
 unsigned long long ReverseBits(unsigned long long x)
 {
-    unsigned long long reverse = 0ULL;
-    int x_index = 0;
-    const size_t ull_num_bits = sizeof(unsigned long long) * CHAR_BIT;
-
-    while (x_index < ull_num_bits) {
-        unsigned long long x_mask = 1ULL << x_index;
-        unsigned long long x_bit = x & x_mask;
-
-        if (x_bit) {
-            int reverse_index = ull_num_bits - 1 - x_index;
-            int left_shift_amount = reverse_index - x_index;
-            unsigned long long reverse_bit;
-
-            if (left_shift_amount == 0) {
-                reverse_bit = x_bit;
-            } else if (left_shift_amount > 0) {
-                reverse_bit = x_bit << left_shift_amount;
-            } else {
-                reverse_bit = x_bit >> -left_shift_amount;
-            }
-
-            reverse |= reverse_bit;
-        }
-
-        x_index++;
-    }
-
-    return reverse;
+    unsigned long long short_mask = (1ULL << SHORT_NUM_BITS) - 1ULL;
+    return get_reversed_short_in_ull(x, 0 * SHORT_NUM_BITS, short_mask) |
+        get_reversed_short_in_ull(x, 1 * SHORT_NUM_BITS, short_mask) |
+        get_reversed_short_in_ull(x, 2 * SHORT_NUM_BITS, short_mask) |
+        get_reversed_short_in_ull(x, 3 * SHORT_NUM_BITS, short_mask);
 }
 
 int main(int argc, char *argv[])
 {
+    memset(reversed_cache, 0, 1 << SHORT_NUM_BITS);
     std::vector<std::string> args{argv + 1, argv + argc};
     std::vector<std::string> param_names{"x"};
     return GenericTestMain(args, "reverse_bits.cc", "reverse_bits.tsv",
