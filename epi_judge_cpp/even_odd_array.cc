@@ -1,28 +1,35 @@
 #include <set>
 #include <vector>
+#include <algorithm>
 
 #include "test_framework/generic_test.h"
 #include "test_framework/test_failure.h"
 #include "test_framework/timed_executor.h"
-using std::vector;
+
+using namespace std;
 
 void EvenOdd(vector<int> *A_ptr)
 {
     vector<int> &A = *A_ptr;
     int n = A.size();
-    int next_even = 0;
-    int next_odd = n - 1;
+    int l = 0;
+    int r = n - 1;
 
-    while (next_even < next_odd) {
-        if (A[next_even] % 2 == 0) {
-            next_even++;
-        } else {
-            std::swap(A[next_even], A[next_odd]);
-            next_odd--;
+    while (true) {
+        while (l < n && A[l] % 2 == 0) {
+            l++;
         }
-    }
 
-    return;
+        while (r >= 0 && A[r] % 2 == 1) {
+            r--;
+        }
+
+        if (l >= n || r < 0 || l >= r) {
+            break;
+        }
+
+        swap(A[l], A[r]);
+    }
 }
 void EvenOddWrapper(TimedExecutor &executor, vector<int> A)
 {
