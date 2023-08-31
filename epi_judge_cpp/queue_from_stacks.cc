@@ -22,15 +22,18 @@ public:
   {
     if (dequeue_stack.empty()) {
       while (!enqueue_stack.empty()) {
-        int x = enqueue_stack.top();
+        dequeue_stack.push(enqueue_stack.top());
         enqueue_stack.pop();
-        dequeue_stack.push(x);
       }
     }
+
+    if (dequeue_stack.empty()) {
+      throw length_error("empty queue");
+    }
     
-    int x = dequeue_stack.top();
+    int ret = dequeue_stack.top();
     dequeue_stack.pop();
-    return x;
+    return ret;
   }
 };
 struct QueueOp
