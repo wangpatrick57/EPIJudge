@@ -1270,7 +1270,7 @@ problem_mapping = {
         },
         "10.05 Compute the median of online data": {
             "C++: online_median.cc": {
-                "passed": 0,
+                "passed": 55,
                 "total": 55
             },
             "Java: OnlineMedian.java": {
