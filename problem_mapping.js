@@ -1426,7 +1426,7 @@ problem_mapping = {
         },
         "11.10 Find the duplicate and missing elements": {
             "C++: search_for_missing_element.cc": {
-                "passed": 0,
+                "passed": 50,
                 "total": 50
             },
             "Java: SearchForMissingElement.java": {
