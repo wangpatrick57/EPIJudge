@@ -1442,7 +1442,7 @@ problem_mapping = {
     "Chapter 12: Hash Tables": {
         "12.00 Bootcamp: Hash Tables": {
             "C++: anagrams.cc": {
-                "passed": 0,
+                "passed": 9,
                 "total": 9
             },
             "Java: Anagrams.java": {
@@ -2684,7 +2684,7 @@ problem_mapping = {
         },
         "24.09 Implement list zipping": {
             "C++: zip_list.cc": {
-                "passed": 0,
+                "passed": 51,
                 "total": 51
             },
             "Java: ZipList.java": {
