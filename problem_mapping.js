@@ -1526,7 +1526,7 @@ problem_mapping = {
         },
         "12.06 Find the smallest subarray covering all values": {
             "C++: smallest_subarray_covering_set.cc": {
-                "passed": 0,
+                "passed": 904,
                 "total": 904
             },
             "Java: SmallestSubarrayCoveringSet.java": {
