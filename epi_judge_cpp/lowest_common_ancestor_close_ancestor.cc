@@ -11,35 +11,25 @@ using namespace std;
 BinaryTreeNode<int> *Lca(const unique_ptr<BinaryTreeNode<int>> &node0,
                          const unique_ptr<BinaryTreeNode<int>> &node1)
 {
-  unordered_set<BinaryTreeNode<int> *> node0_parents;
-  unordered_set<BinaryTreeNode<int> *> node1_parents;
+  unordered_set<BinaryTreeNode<int> *> visited_nodes;
   BinaryTreeNode<int> *it0 = node0.get();
   BinaryTreeNode<int> *it1 = node1.get();
-  while (true) {
+  while (it0 || it1) {
     // insert itx itself before first itx = itx->parent call in case the nodes are equal
-    if (it0 != nullptr) {
-      node0_parents.insert(it0);
-    }
-    if (it1 != nullptr) {
-      node1_parents.insert(it1);
-    }
-
-    if (node1_parents.count(it0) != 0) {
-      return it0;
-    }
-    if (node0_parents.count(it1) != 0) {
-      return it1;
-    }
-
-    // move iterators up
-    if (it0 != nullptr) {
+    if (it0) {
+      if (visited_nodes.emplace(it0).second == false) {
+        return it0;
+      }
       it0 = it0->parent;
     }
-    if (it1 != nullptr) {
+    if (it1) {
+      if (visited_nodes.emplace(it1).second == false) {
+        return it1;
+      }
       it1 = it1->parent;
     }
   }
-  return nullptr;
+  throw invalid_argument("node0 and node1 are not in the same tree");
 }
 int LcaWrapper(TimedExecutor &executor,
                const unique_ptr<BinaryTreeNode<int>> &tree, int key0,
