@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <iostream>
 
 #include "test_framework/generic_test.h"
 using namespace std;
@@ -26,7 +27,6 @@ vector<vector<string>> FindAnagrams(const vector<string> &dictionary)
       anagram_groups.push_back(p.second);
     }
   }
-
   return anagram_groups;
 }
 

@@ -1498,7 +1498,7 @@ problem_mapping = {
         },
         "12.04 Compute the LCA, optimizing for close ancestors": {
             "C++: lowest_common_ancestor_close_ancestor.cc": {
-                "passed": 0,
+                "passed": 948,
                 "total": 948
             },
             "Java: LowestCommonAncestorCloseAncestor.java": {
