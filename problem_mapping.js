@@ -1752,7 +1752,7 @@ problem_mapping = {
         },
         "13.11 Implement a fast sorting algorithm for lists": {
             "C++: sort_list.cc": {
-                "passed": 0,
+                "passed": 209,
                 "total": 209
             },
             "Java: SortList.java": {
