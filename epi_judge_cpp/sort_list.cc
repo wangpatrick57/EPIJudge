@@ -8,46 +8,27 @@ using std::cout;
 using std::endl;
 
 shared_ptr<ListNode<int>> merge_lists(shared_ptr<ListNode<int>> L1, shared_ptr<ListNode<int>> L2) {
-  if (!L1 && !L2) {
-    return nullptr;
-  } else if (!L1) {
-    return L2;
-  } else if (!L2) {
-    return L1;
-  }
-
-  shared_ptr<ListNode<int>> head;
-  shared_ptr<ListNode<int>> build_tail;
+  shared_ptr<ListNode<int>> dummy_head = make_shared<ListNode<int>>();
+  shared_ptr<ListNode<int>> build_tail = dummy_head;
 
   while (L1 && L2) {
     if (L1->data < L2->data) {
-      if (build_tail) {
-        build_tail->next = L1;
-      }
-      build_tail = L1;
+      build_tail->next = L1;
+      build_tail = build_tail->next;
       L1 = L1->next;
     } else {
-      if (build_tail) {
-        build_tail->next = L2;
-      }
-      build_tail = L2;
+      build_tail->next = L2;
+      build_tail = build_tail->next;
       L2 = L2->next;
     }
-    if (!head) {
-      head = build_tail;
-    }
   }
-
-  if (L1) {
+  if (L1 && !L2) {
     build_tail->next = L1;
-  } else {
+  } else if (L2 && !L1) {
     build_tail->next = L2;
   }
-  if (!head) {
-    head = build_tail;
-  }
 
-  return head;
+  return dummy_head->next;
 }
 
 shared_ptr<ListNode<int>> StableSortList(shared_ptr<ListNode<int>> L)
