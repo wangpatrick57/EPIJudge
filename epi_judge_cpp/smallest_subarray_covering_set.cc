@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <vector>
+#include <list>
 
 #include "test_framework/generic_test.h"
 #include "test_framework/test_failure.h"
@@ -13,7 +14,8 @@ struct Subarray
   int start, end;
 };
 
-Subarray FindSmallestSubarrayCoveringSet(
+
+Subarray NonStreaming(
     const vector<string> &paragraph, const unordered_set<string> &keywords)
 {
   int num_keywords = keywords.size();
@@ -65,6 +67,50 @@ Subarray FindSmallestSubarrayCoveringSet(
     }
   }
   return best_interval;
+}
+Subarray Streaming(
+    const vector<string> &paragraph, const unordered_set<string> &keywords)
+{  
+  int num_keywords = keywords.size();
+  if (num_keywords == 0) {
+    return {0, 0};
+  }
+
+  list<int> latest_occurrences; // will contain up to one entry for each keyword
+  unordered_map<string, list<int>::iterator> keyword_to_node;
+  int best_interval_length = paragraph.size() + 1;
+  Subarray best_interval = {-1, -1};
+  for (int i = 0; i < paragraph.size(); i++) {
+    const string &word = paragraph.at(i);
+    if (keywords.count(word) != 0) {
+      // remove old occurrence if necessary
+      if (keyword_to_node.count(word) != 0) {
+        list<int>::iterator node = keyword_to_node.at(word);
+        latest_occurrences.erase(node);
+      }
+
+      // record latest occurrence
+      latest_occurrences.push_back(i);
+      list<int>::iterator last_node = latest_occurrences.end();
+      last_node--;
+      keyword_to_node[word] = last_node;
+
+      // if is interval candidate, check its length
+      if (latest_occurrences.size() == num_keywords) {
+        int interval_length = i + 1 - latest_occurrences.front();
+        if (interval_length < best_interval_length) {
+          best_interval_length = interval_length;
+          best_interval = {latest_occurrences.front(), i};
+        }
+      }
+    }
+  }
+  return best_interval;
+}
+Subarray FindSmallestSubarrayCoveringSet(
+    const vector<string> &paragraph, const unordered_set<string> &keywords)
+{
+  return Streaming(paragraph, keywords);
 }
 int FindSmallestSubarrayCoveringSetWrapper(
     TimedExecutor &executor, const vector<string> &paragraph,
