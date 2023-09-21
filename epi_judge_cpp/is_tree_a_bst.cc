@@ -16,7 +16,7 @@ bool isBSTHelper(const unique_ptr<BinaryTreeNode<int>> &tree, int min, int max) 
 
 bool IsBinaryTreeBST(const unique_ptr<BinaryTreeNode<int>> &tree)
 {
-  return isBSTHelper(tree, INT_MIN, INT_MAX);
+  return isBSTHelper(tree, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 }
 
 int main(int argc, char *argv[])
