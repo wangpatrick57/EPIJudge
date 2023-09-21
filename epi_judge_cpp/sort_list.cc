@@ -35,33 +35,22 @@ shared_ptr<ListNode<int>> StableSortList(shared_ptr<ListNode<int>> L)
 {
   if (!L) {
     return nullptr;
+  } else if (!L->next) {
+    return L; // can't break this list in half without infinite recursion
   } else {
     // find tail of left list ((n + 1) / 2)
     shared_ptr<ListNode<int>> slow = L, fast = L->next;
-    if (fast) {
-      fast = fast->next;
-    }
-    while (fast) {
+    while (fast && fast->next) {
       slow = slow->next;
-      fast = fast->next;
-      if (fast) {
-        fast = fast->next;
-      }
+      fast = fast->next->next;
     }
     shared_ptr<ListNode<int>> left_tail = slow;
 
-    // recurse
+    // recurse and merge
     shared_ptr<ListNode<int>> left_head = L;
     shared_ptr<ListNode<int>> right_head = left_tail->next;
     left_tail->next = nullptr;
-    // this if condition avoids infinite recursion
-    if (left_head && right_head) {
-      left_head = StableSortList(left_head);
-      right_head = StableSortList(right_head);
-    }
-
-    // merge
-    return merge_lists(left_head, right_head);
+    return merge_lists(StableSortList(left_head), StableSortList(right_head));
   }
 }
 
