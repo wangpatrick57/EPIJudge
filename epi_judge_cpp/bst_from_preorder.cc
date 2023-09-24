@@ -2,41 +2,47 @@
 
 #include "bst_node.h"
 #include "test_framework/generic_test.h"
-using std::unique_ptr;
-using std::vector;
-using std::stack;
 using std::cout;
 using std::endl;
+using std::stack;
+using std::unique_ptr;
+using std::vector;
 
-unique_ptr<BstNode<int>> RebuildBSTFromPreorder(
+unique_ptr<BstNode<int>> iterativeBSTFromPreorder(
     const vector<int> &preorder_sequence)
 {
   stack<int> next_highest_value;
   unique_ptr<BstNode<int>> dummy_root = std::make_unique<BstNode<int>>(0);
   stack<BstNode<int> *> parents;
   BstNode<int> *curr_node = dummy_root.get();
-  for (int val : preorder_sequence) {
+  for (int val : preorder_sequence)
+  {
     // invariant 1.1: the top of next_highest_value will hold the next highest value in an inorder traversal of the current tree
     // invariant 1.2: the top of next_highest_value will be the value of the closest ancestor node with an empty right child
     // invariant 2.1: parents will hold the path of curr_node's parents until the root (not the dummy root), including curr_node itself
     // invariant 2.2: parents will be empty if curr_node is the dummy root
     // in each loop, we create a new node with the val and need to decide where to place it. this node will become the next "curr_node"
     unique_ptr<BstNode<int>> new_node = std::make_unique<BstNode<int>>(val);
-    if (next_highest_value.size() == 0 || val < next_highest_value.top()) {
+    if (next_highest_value.size() == 0 || val < next_highest_value.top())
+    {
       // case: place new_node to the left of curr_node
       curr_node->left = std::move(new_node);
       curr_node = curr_node->left.get(); // we need to do this since curr_node->left owns new_node now
-    } else {
+    }
+    else
+    {
       // case: place new_node to the right of some node in parents (possibly curr_node)
       // if we pop until next_highest_value.size() == 0, that simply means the next highest value is +inf
       int last_popped_val;
       assert(next_highest_value.size() > 0); // so that last_popped_val is set to something
-      while (next_highest_value.size() > 0 && val > next_highest_value.top()) {
+      while (next_highest_value.size() > 0 && val > next_highest_value.top())
+      {
         last_popped_val = next_highest_value.top();
         next_highest_value.pop();
       }
       // the most recently popped val is the largest one that is < val. new_node should thus be the right child of the node with that popped val
-      while (parents.top()->data != last_popped_val) {
+      while (parents.top()->data != last_popped_val)
+      {
         parents.pop();
         assert(!parents.empty());
       }
@@ -50,6 +56,38 @@ unique_ptr<BstNode<int>> RebuildBSTFromPreorder(
     next_highest_value.push(val);
   }
   return std::move(dummy_root->left);
+}
+
+unique_ptr<BstNode<int>> recursiveBSTFromPreorder(
+    const vector<int> &preorder_sequence, int start, int min, int max)
+{
+  int n = preorder_sequence.size();
+  while (start < n && preorder_sequence.at(start) < min) {
+    start++;
+  }
+  if (start >= n)
+  {
+    return nullptr;
+  }
+  int root_val = preorder_sequence.at(start);
+  if (root_val < min || root_val > max)
+  {
+    return nullptr;
+  }
+  unique_ptr<BstNode<int>> root = std::make_unique<BstNode<int>>(root_val);
+  if (root_val > std::numeric_limits<int>::min()) {
+    root->left = recursiveBSTFromPreorder(preorder_sequence, start + 1, min, root_val - 1);
+  }
+  if (root_val < std::numeric_limits<int>::max()) {
+    root->right = recursiveBSTFromPreorder(preorder_sequence, start + 1, root_val + 1, max);
+  }
+  return root;
+}
+
+unique_ptr<BstNode<int>> RebuildBSTFromPreorder(
+    const vector<int> &preorder_sequence)
+{
+  return recursiveBSTFromPreorder(preorder_sequence, 0, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 }
 
 int main(int argc, char *argv[])
