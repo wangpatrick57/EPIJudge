@@ -16,19 +16,21 @@ unique_ptr<BstNode<int>> RebuildBSTFromPreorder(
   stack<BstNode<int> *> parents;
   BstNode<int> *curr_node = dummy_root.get();
   for (int val : preorder_sequence) {
-    cout << val << endl;
     // invariant 1.1: the top of next_highest_value will hold the next highest value in an inorder traversal of the current tree
     // invariant 1.2: the top of next_highest_value will be the value of the closest ancestor node with an empty right child
-    // invariant 2: parents will hold the path of curr_node's parents until the root (not the dummy root), not including curr_node itself
+    // invariant 2.1: parents will hold the path of curr_node's parents until the root (not the dummy root), including curr_node itself
+    // invariant 2.2: parents will be empty if curr_node is the dummy root
+    // in each loop, we create a new node with the val and need to decide where to place it. this node will become the next "curr_node"
     unique_ptr<BstNode<int>> new_node = std::make_unique<BstNode<int>>(val);
     if (next_highest_value.size() == 0 || val < next_highest_value.top()) {
-      next_highest_value.push(val);
-      parents.push(curr_node);
+      // case: place new_node to the left of curr_node
       curr_node->left = std::move(new_node);
       curr_node = curr_node->left.get(); // we need to do this since curr_node->left owns new_node now
     } else {
+      // case: place new_node to the right of some node in parents (possibly curr_node)
       // if we pop until next_highest_value.size() == 0, that simply means the next highest value is +inf
       int last_popped_val;
+      assert(next_highest_value.size() > 0); // so that last_popped_val is set to something
       while (next_highest_value.size() > 0 && val > next_highest_value.top()) {
         last_popped_val = next_highest_value.top();
         next_highest_value.pop();
@@ -36,12 +38,16 @@ unique_ptr<BstNode<int>> RebuildBSTFromPreorder(
       // the most recently popped val is the largest one that is < val. new_node should thus be the right child of the node with that popped val
       while (parents.top()->data != last_popped_val) {
         parents.pop();
+        assert(!parents.empty());
       }
       parents.top()->right = std::move(new_node);
-      curr_node = parents.top()->right.get(); // we need to do this since parents.top()->right owns new_node now
-      // make sure invariant 1 is satisfied
-      next_highest_value.push(val);
+      curr_node = parents.top()->right.get(); // we need to use parents.top() instead of new_node since parents.top()->right owns new_node now
     }
+    // by this point, curr_node has been set to the node with value val (new_node)
+    assert(curr_node->data == val);
+    parents.push(curr_node);
+    // since we just pushed curr_node we also push val
+    next_highest_value.push(val);
   }
   return std::move(dummy_root->left);
 }
