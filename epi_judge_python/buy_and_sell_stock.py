@@ -4,8 +4,16 @@ from test_framework import generic_test
 
 
 def buy_and_sell_stock_once(prices: List[float]) -> float:
-    # TODO - you fill in here.
-    return 0.0
+    n = len(prices)
+    max_profit = 0
+    lowest_price_before_i = prices[0]
+
+    for i in range(1, n):
+        max_profit_selling_i = prices[i] - lowest_price_before_i
+        max_profit = max(max_profit, max_profit_selling_i)
+        lowest_price_before_i = min(lowest_price_before_i, prices[i])
+
+    return max_profit
 
 
 if __name__ == '__main__':
